@@ -50,7 +50,7 @@ float snoise(vec2 v){
           dot(x0, x0),
           dot(x12.xy, x12.xy),
           dot(x12.zw, x12.zw)
-      ), 
+      ),
       0.0
   );
   m = m * m;
@@ -68,19 +68,89 @@ float snoise(vec2 v){
   return 130.0 * dot(m, g);
 }
 
+vec2 hash22(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973));
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.xx + p3.yz) * p3.zy);
+}
+
+float hash12(vec2 p) {
+  vec3 p3 = fract(vec3(p.xyx) * vec3(0.1031, 0.1030, 0.0973));
+  p3 += dot(p3, p3.yzx + 33.33);
+  return fract((p3.x + p3.y) * p3.z);
+}
+
+float sandGrains(vec2 px) {
+  float result = 0.0;
+  float scale = 18.0;
+  vec2 gCoord = px / scale;
+  vec2 cellID = floor(gCoord);
+  vec2 cellUV = fract(gCoord);
+  for (int y = -1; y <= 1; y++) {
+    for (int x = -1; x <= 1; x++) {
+      vec2 nb = cellID + vec2(float(x), float(y));
+      vec2 rnd = hash22(nb);
+      float size = 0.18 + rnd.x * 0.22;
+      float bright = 0.35 + rnd.y * 0.65;
+      vec2 d = vec2(float(x), float(y)) + rnd - cellUV;
+      float dist = length(d);
+      result += bright * smoothstep(size, size * 0.15, dist);
+    }
+  }
+  return clamp(result, 0.0, 1.0);
+}
+
+float waterBubbles(vec2 px, float t) {
+  float result = 0.0;
+  for (int layer = 0; layer < 3; layer++) {
+    float lf = float(layer);
+    float speed = 0.012 + lf * 0.007;
+    float cellSize = 75.0 + lf * 35.0;
+    float lseed = lf * 173.7;
+    vec2 moved = vec2(px.x, mod(px.y + t * speed * uResolution.y, uResolution.y));
+    vec2 gCoord = moved / cellSize;
+    vec2 cellID = floor(gCoord);
+    vec2 cellUV = fract(gCoord);
+    for (int y = -1; y <= 1; y++) {
+      for (int x = -1; x <= 1; x++) {
+        vec2 nb = cellID + vec2(float(x), float(y)) + lseed;
+        vec2 rnd = hash22(nb);
+        float radius = 0.05 + rnd.x * 0.12;
+        float alpha = 0.18 + rnd.y * 0.22;
+        vec2 center = vec2(float(x), float(y)) + rnd * 0.75 + 0.125;
+        float dist = length(cellUV - center);
+        float outer = smoothstep(radius, radius - 0.008, dist);
+        float inner = smoothstep(radius - 0.022, radius - 0.032, dist);
+        result += (outer - inner) * alpha * 2.5;
+      }
+    }
+  }
+  return clamp(result, 0.0, 1.0);
+}
+
 void main() {
   vec2 uv = gl_FragCoord.xy / uResolution;
-  
+  vec2 px = gl_FragCoord.xy;
+
   float height = snoise(vec2(uv.x * 2.0 + uTime * 0.1, uTime * 0.25)) * 0.5 * uAmplitude;
   height = exp(height);
   height = (uv.y * 2.0 - height + 0.2);
   float intensity = 0.6 * height;
-  
+
   float midPoint = 0.20;
   float auroraAlpha = smoothstep(midPoint - uBlend * 0.5, midPoint + uBlend * 0.5, intensity);
-  
+
   vec3 auroraColor = mix(uColorTop, uColorWave, auroraAlpha);
-  
+
+  float sandMask = smoothstep(0.55, 0.82, auroraAlpha);
+  float grains = sandGrains(px);
+  vec3 grainColor = mix(uColorWave * 0.72, uColorWave * 1.08, grains);
+  auroraColor = mix(auroraColor, grainColor, grains * sandMask * 0.38);
+
+  float waterMask = smoothstep(0.45, 0.12, auroraAlpha);
+  float bubbles = waterBubbles(px, uTime);
+  auroraColor = mix(auroraColor, uColorTop * 1.6, bubbles * waterMask * 0.65);
+
   fragColor = vec4(auroraColor, 1);
 }
 `;
