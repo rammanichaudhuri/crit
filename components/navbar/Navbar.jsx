@@ -23,7 +23,8 @@ export default function Nav() {
         <nav className='nav'>
             <div className='inner'>
                 {/* logo */}
-                <a href="/" className='logo'>
+                <a href="/" className='logo' style={{ display: "flex", alignItems: "center", gap: "3px" }}>
+                    <img src="/images/logo8.svg" width={40} height={40} />
                     crit.
                 </a>
 

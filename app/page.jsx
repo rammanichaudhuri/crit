@@ -25,22 +25,20 @@ export default function Home() {
           blend={0}
         />
         <div className="glass-container">
-          
+
+          <span style={{ fontSize: "60px", color: "#ddb772", WebkitTextStroke: "2px black" }}>crit.</span>
           <Button>
             <span style={{ fontSize: "24px" }}>Get started!</span>
           </Button>
           <span style={{ fontSize: "18px", fontFamily: "Mansalva", color: "#EDE9E6", textAlign: "center" }}>
             {/* The fastest way to level up is to 
             <br /> */}
-            pick art, or upload what you want. 
-            <br /> jot down your thoughts and ideas, assisted with ai. 
+            pick art, or upload what you want.
+            <br /> jot down your thoughts and ideas, assisted with ai.
             <br />get sharper, and curate your library, track your progress.
             <br />
           </span>
         </div>
-        <Link href="/library">
-          <button>Start</button>
-        </Link>
       </div>
     </>
   );
