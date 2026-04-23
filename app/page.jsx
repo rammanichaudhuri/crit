@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import './page.css';
 import Aurora from '../components/Aurora.jsx';
 
@@ -12,7 +13,9 @@ export default function Home() {
           amplitude={0.8}
           blend={0}
         />
-        <button>Start</button>
+        <Link href="/library">
+          <button>Start</button>
+        </Link>
       </div>
     </>
   );
