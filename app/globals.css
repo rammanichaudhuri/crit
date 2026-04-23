@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Mansalva&display=swap');
+
 @import "tailwindcss";
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
@@ -127,4 +129,15 @@
   html {
     @apply font-sans;
   }
+}
+
+@font-face {
+  font-family: 'Batolah';
+  src: local('Batolah'), url(/fonts/Batolah.otf) format('opentype');
+}
+
+.mansalva-regular {
+  font-family: "Mansalva", sans-serif;
+  font-weight: 400;
+  font-style: normal;
 }

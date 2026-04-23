@@ -86,11 +86,12 @@ void main() {
 `;
 
 export default function Aurora(props) {
-  const { colorTop = "#00A165", colorWave ="#ffc1ff", amplitude = 0.8, blend = 0.5 } = props;
+  const { colorTop = "#00A165", colorWave = "#ffc1ff", amplitude = 0.8, blend = 0.5 } = props;
   const propsRef = useRef(props);
   propsRef.current = props;
 
   const ctnDom = useRef(null);
+  const bubbleRef = useRef(null);
 
   useEffect(() => {
     const ctn = ctnDom.current;
@@ -125,7 +126,48 @@ export default function Aurora(props) {
     }
 
     const parseColor = hex => { const c = new Color(hex); return [c.r, c.g, c.b]; }
-    
+
+    const bc = bubbleRef.current;
+    const bctx = bc.getContext('2d');
+    bc.width = ctn.offsetWidth;
+    bc.height = ctn.offsetHeight;
+
+    const bubbles = Array.from({ length: 60 }, () => ({
+      x: Math.random() * bc.width,
+      y: bc.height * 0.5 + Math.random() * bc.height * 0.5,
+      r: Math.random() * 7 + 2,
+      speed: Math.random() * 0.6 + 0.2,
+      wobble: Math.random() * Math.PI * 2,
+      opacity: Math.random() * 0.5 + 0.5,
+    }));
+
+    function drawBubbles() {
+      bctx.clearRect(0, 0, bc.width, bc.height);
+      for (const b of bubbles) {
+        // main bubble
+        bctx.beginPath();
+        bctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        bctx.fillStyle = `rgba(255, 255, 255, ${b.opacity * 0.8})`;
+        bctx.fill();
+
+        // shine
+        bctx.beginPath();
+        bctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.35, b.r * 0.28, 0, Math.PI * 2);
+        bctx.fillStyle = `rgba(255, 255, 255, 0.5)`;
+        bctx.fill();
+
+        b.y -= b.speed;
+        b.x += Math.sin(b.wobble) * 0.4;
+        b.wobble += 0.018;
+
+        if (b.y < bc.height * 0.3) {
+          b.y = bc.height + b.r;
+          b.x = Math.random() * bc.width;
+        }
+      }
+      requestAnimationFrame(drawBubbles);
+    }
+    drawBubbles();
 
     program = new Program(gl, {
       vertex: VERT,
@@ -170,5 +212,10 @@ export default function Aurora(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [amplitude]);
 
-  return <div ref={ctnDom} className="aurora-container" />;
+  return (
+    <div ref={ctnDom} className="aurora-container">
+      <canvas ref={bubbleRef} style={{ position: "absolute", height: "100%", width: "100%" }}>
+      </canvas>
+    </div>
+  );
 }

@@ -1,7 +1,34 @@
+body {
+    background-color: blanchedalmond;
+    overflow: hidden;
+    height: 100vh;
+    width: 100vw;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
 
 .container {
-    width: 100vw;
-    height: 100vh;
+    width: calc(100vw - 20px);
+    height: calc(100vh - 20px);
     overflow: hidden;
+    display: flex;
     background-color: #EDE9E6;
+    font-family: "Mansalva", sans-serif;
+    border-radius: 50px;
+}
+
+.glass-container {
+    backdrop-filter: saturate(1.4);
+    position: absolute;
+    z-index: 2;
+    inset: 0;
+    display: flex;
+    width: 100%;
+    height: 100%;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 30px;
+    justify-content: center;
+    align-items: center;
 }
