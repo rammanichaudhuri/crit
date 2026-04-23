@@ -109,15 +109,16 @@ export default function Aurora(props) {
     let program;
 
     function resize() {
-      if (!ctn) return;
       const width = ctn.offsetWidth;
       const height = ctn.offsetHeight;
+      if (!width || !height) return;
       renderer.setSize(width, height);
       if (program) {
         program.uniforms.uResolution.value = [width, height];
       }
     }
-    window.addEventListener('resize', resize);
+    const ro = new ResizeObserver(resize);
+    ro.observe(ctn);
 
     const geometry = new Triangle(gl);
     if (geometry.attributes.uv) {
@@ -161,7 +162,7 @@ export default function Aurora(props) {
 
     return () => {
       cancelAnimationFrame(animateId);
-      window.removeEventListener('resize', resize);
+      ro.disconnect();
       if (ctn && gl.canvas.parentNode === ctn) {
         ctn.removeChild(gl.canvas);
       }
