@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import './page.css';
 import Aurora from '../components/Aurora.jsx';
 import Noise from '../components/Noise';
@@ -37,6 +38,9 @@ export default function Home() {
             <br />
           </span>
         </div>
+        <Link href="/library">
+          <button>Start</button>
+        </Link>
       </div>
     </>
   );
