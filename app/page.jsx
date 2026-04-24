@@ -1,5 +1,6 @@
 'use client'
 
+import { usePathname } from 'next/navigation';
 import './page.css';
 import Aurora from '../components/Aurora.jsx';
 import Nav from '../components/navbar/Navbar.jsx';
@@ -7,6 +8,8 @@ import Button from '../components/Button';
 import PixelTrail from '../components/PixelTrail';
 
 export default function Home() {
+  const pathname = usePathname();
+
   return (
     <>
       <div style={{ position: "absolute", top: 0, left: 0, height: "100dvh", width: "100dvw" }}>
@@ -23,6 +26,7 @@ export default function Home() {
       </div>
       <div className="container">
         <Aurora
+          key={pathname}
           colorTop="#304c89"
           colorWave="#648de5"
           speed={1.8}
