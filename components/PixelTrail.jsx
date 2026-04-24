@@ -113,7 +113,8 @@ export default function PixelTrail({
   },
   gooeyFilter,
   color = '#ffffff',
-  className = ''
+  className = '',
+  containerRef
 }) {
   return (
     <>
@@ -122,7 +123,9 @@ export default function PixelTrail({
         {...canvasProps}
         gl={glProps}
         className={`pixel-canvas ${className}`}
-        style={gooeyFilter && { filter: `url(#${gooeyFilter.id})` }}
+        style={{ pointerEvents: 'none', ...(gooeyFilter ? { filter: `url(#${gooeyFilter.id})` } : {}) }}
+        eventSource={containerRef}
+        eventPrefix="client"
       >
         <Scene
           gridSize={gridSize}
