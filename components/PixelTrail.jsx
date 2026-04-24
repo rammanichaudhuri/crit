@@ -1,4 +1,4 @@
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import { Canvas, useThree } from '@react-three/fiber';
 import { shaderMaterial, useTrailTexture } from '@react-three/drei';
 import * as THREE from 'three';
@@ -113,9 +113,10 @@ export default function PixelTrail({
   },
   gooeyFilter,
   color = '#ffffff',
-  className = '',
-  containerRef
+  className = ''
 }) {
+  const bodyRef = useRef(typeof document !== 'undefined' ? document.body : null);
+
   return (
     <>
       {gooeyFilter && <GooeyFilter id={gooeyFilter.id} strength={gooeyFilter.strength} />}
@@ -124,7 +125,7 @@ export default function PixelTrail({
         gl={glProps}
         className={`pixel-canvas ${className}`}
         style={{ pointerEvents: 'none', ...(gooeyFilter ? { filter: `url(#${gooeyFilter.id})` } : {}) }}
-        eventSource={containerRef}
+        eventSource={bodyRef}
         eventPrefix="client"
       >
         <Scene
