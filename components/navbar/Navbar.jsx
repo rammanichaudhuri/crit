@@ -5,9 +5,9 @@ import Button from '../Button';
 import './navbar.css';
 
 const NAV_LINKS = [
-    { label: 'Library', href: '/library' },
-    { label: 'Critique', href: '/critique' },
-    { label: 'Community', href: '/community' },
+    { label: 'Library',    href: '/library' },
+    { label: 'Critique',   href: '/critique' },
+    { label: 'Challenges', href: '/challenges' },
 ];
 
 export default function Nav() {
