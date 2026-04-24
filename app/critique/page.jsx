@@ -3,33 +3,37 @@
 import { useState } from 'react';
 
 const SECTIONS = [
-  { key: 'works',   label: 'What works',       accent: '#4ade80', placeholder: 'Composition, lighting, colour palette, mood — what lands?' },
-  { key: 'doesnt',  label: "What doesn't",      accent: '#f87171', placeholder: 'What feels off? Proportion, balance, tension, clarity...' },
-  { key: 'improve', label: 'How to improve',    accent: '#648de5', placeholder: 'Concrete suggestions — what would you change or push further?' },
+  {
+    key: 'works',
+    label: 'What works',
+    symbol: '✓',
+    symbolColor: '#4ade80',
+    placeholder: 'Composition, light, colour — what lands and why?',
+  },
+  {
+    key: 'doesnt',
+    label: "What doesn't",
+    symbol: '✗',
+    symbolColor: '#f87171',
+    placeholder: 'What feels off? Proportion, tension, clarity, balance...',
+  },
+  {
+    key: 'improve',
+    label: 'How to improve',
+    symbol: '→',
+    symbolColor: '#648de5',
+    placeholder: 'Concrete changes — what would you push, cut, or rethink?',
+  },
 ];
 
-const TAGS = ['Composition', 'Colour', 'Light', 'Perspective', 'Emotion', 'Technique'];
-
-const MOCK_AI = `The composition leans heavily on symmetry, which creates stability but risks feeling static. The warm tones in the lower third anchor the piece well, though the transition to cooler values mid-frame feels abrupt — a softer gradient might unify the palette. The focal point is clear, but introducing a secondary element off-axis could add visual tension without breaking the harmony.`;
+const MOCK_AI = `The composition leans on symmetry — stable, but risks feeling inert. Warm tones in the lower third anchor the piece well, though the shift to cooler values mid-frame is abrupt; a softer gradient would unify the palette. The focal point reads clearly. Introducing a secondary element off-axis would add visual tension without breaking the harmony.`;
 
 export default function CritiquePage() {
   const [notes, setNotes] = useState({ works: '', doesnt: '', improve: '' });
   const [showAI, setShowAI] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
-  const [activeSection, setActiveSection] = useState('works');
 
-  const totalWords = Object.values(notes)
-    .join(' ')
-    .trim()
-    .split(/\s+/)
-    .filter(Boolean).length;
-
-  function handleTag(tag) {
-    setNotes(n => ({
-      ...n,
-      [activeSection]: n[activeSection] + (n[activeSection] ? ', ' : '') + tag.toLowerCase(),
-    }));
-  }
+  const totalWords = Object.values(notes).join(' ').trim().split(/\s+/).filter(Boolean).length;
 
   function handleAI() {
     if (showAI) { setShowAI(false); return; }
@@ -38,147 +42,108 @@ export default function CritiquePage() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#111118', color: '#EDE9E6' }}>
-      <main className="flex h-screen pt-[84px]">
+    <div style={{ height: '100vh', background: '#EDE9E6', color: '#2C2825', overflow: 'hidden' }}>
+      <main className="flex h-full pt-[84px]">
 
         {/* ── Left: image ── */}
         <div
-          className="w-1/2 relative flex items-center justify-center overflow-hidden flex-shrink-0"
-          style={{ background: '#0c0c14' }}
+          className="relative flex-shrink-0 flex items-center justify-center overflow-hidden"
+          style={{ width: '44%', background: '#D4CEC9' }}
         >
           <img
             src="/images/bg1.jpg"
             alt="Artwork under critique"
             className="w-full h-full object-contain"
           />
-          {/* artwork label */}
+
           <div
             className="absolute bottom-5 left-5 text-xs px-3 py-1.5 rounded-full"
-            style={{ background: 'rgba(17,17,24,0.8)', backdropFilter: 'blur(8px)', color: 'rgba(237,233,230,0.6)', border: '1px solid rgba(255,255,255,0.08)' }}
+            style={{ background: 'rgba(237,233,230,0.85)', backdropFilter: 'blur(8px)', color: '#5C5650', border: '1px solid #D4CEC9' }}
           >
             Untitled I — 2024 · Oil on canvas
           </div>
 
-          {/* change image */}
-          <button
-            className="absolute top-5 right-5 text-xs px-3 py-1.5 rounded-full transition-colors"
-            style={{ background: 'rgba(17,17,24,0.8)', backdropFilter: 'blur(8px)', color: 'rgba(237,233,230,0.5)', border: '1px solid rgba(255,255,255,0.08)' }}
+          <Link
+            href="/library"
+            className="absolute top-5 left-5 text-xs px-3 py-1.5 rounded-full transition-colors"
+            style={{ background: 'rgba(237,233,230,0.85)', backdropFilter: 'blur(8px)', color: '#5C5650', border: '1px solid #D4CEC9' }}
           >
-            Change image
-          </button>
+            ← Library
+          </Link>
         </div>
 
-        {/* ── Right: critique form ── */}
-        <div className="w-1/2 flex flex-col overflow-hidden" style={{ borderLeft: '1px solid rgba(255,255,255,0.07)' }}>
+        {/* ── Right: all sections visible at once ── */}
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ borderLeft: '1px solid #D4CEC9' }}>
 
           {/* top bar */}
           <div
-            className="flex items-center justify-between px-7 py-4 flex-shrink-0"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
+            className="flex items-center justify-between px-8 py-4 flex-shrink-0"
+            style={{ borderBottom: '1px solid #D4CEC9' }}
           >
-            <span style={{ fontFamily: 'Mansalva', fontSize: 18, color: '#ddb772' }}>your critique.</span>
-            <span className="text-xs" style={{ color: 'rgba(237,233,230,0.35)' }}>
+            <span style={{ fontFamily: 'Mansalva', fontSize: 20, color: '#ddb772' }}>your critique.</span>
+            <span className="text-xs" style={{ color: '#9C9690' }}>
               {totalWords} {totalWords === 1 ? 'word' : 'words'}
             </span>
           </div>
 
-          {/* section tabs */}
-          <div
-            className="flex flex-shrink-0"
-            style={{ borderBottom: '1px solid rgba(255,255,255,0.07)' }}
-          >
-            {SECTIONS.map(s => (
-              <button
+          {/* three sections — all visible, scrollable */}
+          <div className="flex-1 overflow-y-auto">
+            {SECTIONS.map((s, i) => (
+              <div
                 key={s.key}
-                onClick={() => setActiveSection(s.key)}
-                className="flex-1 py-3 text-xs font-medium transition-colors relative"
-                style={{ color: activeSection === s.key ? s.accent : 'rgba(237,233,230,0.35)' }}
+                style={{ borderBottom: i < SECTIONS.length - 1 ? '1px solid #D4CEC9' : 'none' }}
               >
-                {s.label}
-                {activeSection === s.key && (
-                  <span
-                    className="absolute bottom-0 left-0 right-0 h-px"
-                    style={{ background: s.accent }}
-                  />
-                )}
-              </button>
-            ))}
-          </div>
+                {/* section label */}
+                <div className="flex items-center gap-2 px-8 pt-5 pb-2">
+                  <span className="text-sm font-semibold" style={{ color: s.symbolColor }}>{s.symbol}</span>
+                  <span className="text-xs font-medium uppercase tracking-widest" style={{ color: '#9C9690' }}>{s.label}</span>
+                </div>
 
-          {/* active textarea */}
-          <div className="flex-1 relative overflow-hidden">
-            {SECTIONS.map(s => (
-              <textarea
-                key={s.key}
-                value={notes[s.key]}
-                onChange={e => setNotes(n => ({ ...n, [s.key]: e.target.value }))}
-                placeholder={s.placeholder}
-                className="absolute inset-0 w-full h-full px-7 py-5 bg-transparent resize-none text-sm leading-relaxed focus:outline-none transition-opacity"
-                style={{
-                  color: '#EDE9E6',
-                  opacity: activeSection === s.key ? 1 : 0,
-                  pointerEvents: activeSection === s.key ? 'auto' : 'none',
-                }}
-              />
+                <textarea
+                  value={notes[s.key]}
+                  onChange={e => setNotes(n => ({ ...n, [s.key]: e.target.value }))}
+                  placeholder={s.placeholder}
+                  rows={4}
+                  className="w-full px-8 pb-5 bg-transparent resize-none text-sm leading-relaxed focus:outline-none"
+                  style={{ color: '#2C2825', caretColor: s.symbolColor }}
+                />
+              </div>
             ))}
-          </div>
 
-          {/* AI insight panel */}
-          {showAI && (
-            <div
-              className="mx-6 mb-4 rounded-xl p-4 text-sm leading-relaxed flex-shrink-0"
-              style={{ background: 'rgba(100,141,229,0.08)', border: '1px solid rgba(100,141,229,0.2)', color: 'rgba(237,233,230,0.8)' }}
-            >
-              <p className="text-xs font-medium mb-2" style={{ color: '#648de5' }}>AI insight</p>
-              {MOCK_AI}
-            </div>
-          )}
+            {/* AI panel */}
+            {showAI && (
+              <div className="mx-8 my-4 rounded-xl p-5" style={{ background: 'rgba(100,141,229,0.06)', border: '1px solid rgba(100,141,229,0.2)' }}>
+                <p className="text-xs font-semibold mb-2 uppercase tracking-widest" style={{ color: '#648de5' }}>AI insight</p>
+                <p className="text-sm leading-relaxed" style={{ color: '#5C5650' }}>{MOCK_AI}</p>
+              </div>
+            )}
+          </div>
 
           {/* bottom bar */}
           <div
-            className="px-7 py-4 flex-shrink-0 flex flex-col gap-3"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.07)' }}
+            className="flex items-center justify-between px-8 py-4 flex-shrink-0"
+            style={{ borderTop: '1px solid #D4CEC9' }}
           >
-            {/* prompt tags */}
-            <div className="flex flex-wrap gap-2">
-              {TAGS.map(tag => (
-                <button
-                  key={tag}
-                  onClick={() => handleTag(tag)}
-                  className="text-xs px-3 py-1 rounded-full transition-colors"
-                  style={{ border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(237,233,230,0.5)' }}
-                >
-                  {tag}
-                </button>
-              ))}
-            </div>
+            <button
+              onClick={handleAI}
+              className="text-xs px-4 py-2 rounded-full transition-colors flex items-center gap-2"
+              style={showAI
+                ? { background: 'rgba(100,141,229,0.1)', color: '#648de5', border: '1px solid rgba(100,141,229,0.25)' }
+                : { border: '1px solid #D4CEC9', color: '#9C9690' }}
+            >
+              <span>{aiLoading ? '…' : '✦'}</span>
+              {aiLoading ? 'Thinking…' : showAI ? 'Hide insight' : 'AI insight'}
+            </button>
 
-            <div className="flex items-center justify-between">
-              {/* AI button */}
-              <button
-                onClick={handleAI}
-                className="text-xs px-4 py-2 rounded-full transition-colors flex items-center gap-2"
-                style={showAI
-                  ? { background: 'rgba(100,141,229,0.15)', color: '#648de5', border: '1px solid rgba(100,141,229,0.3)' }
-                  : { border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(237,233,230,0.5)' }}
-              >
-                {aiLoading ? (
-                  <span style={{ display: 'inline-block', animation: 'spin 1s linear infinite' }}>⟳</span>
-                ) : '✦'}
-                {aiLoading ? 'Thinking…' : showAI ? 'Hide insight' : 'AI insight'}
-              </button>
-
-              {/* submit */}
-              <button
-                disabled={totalWords < 5}
-                className="px-5 py-2 rounded-full text-sm font-medium transition-colors"
-                style={totalWords >= 5
-                  ? { background: '#ddb772', color: '#111118' }
-                  : { background: 'rgba(255,255,255,0.06)', color: 'rgba(237,233,230,0.2)', cursor: 'not-allowed' }}
-              >
-                Save critique
-              </button>
-            </div>
+            <button
+              disabled={totalWords < 5}
+              className="px-6 py-2 rounded-full text-sm font-medium transition-all"
+              style={totalWords >= 5
+                ? { background: '#2C2825', color: '#EDE9E6' }
+                : { background: '#D4CEC9', color: '#B4AEA8', cursor: 'not-allowed' }}
+            >
+              Save critique
+            </button>
           </div>
         </div>
       </main>
