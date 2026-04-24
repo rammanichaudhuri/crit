@@ -1,14 +1,28 @@
+'use client'
+
 import Link from 'next/link';
 import './page.css';
 import Aurora from '../components/Aurora.jsx';
 import Noise from '../components/Noise';
 import Nav from '../components/navbar/Navbar.jsx';
 import Button from '../components/Button';
+import PixelTrail from '../components/PixelTrail';
 
 export default function Home() {
   return (
     <>
-      <Nav />
+      <div style={{ position: "absolute", top: 0, left: 0, height: "100dvh", width: "100dvw" }}>
+        <PixelTrail
+          gridSize={100}
+          trailSize={0.08}
+          maxAge={1500}
+          interpolate={4}
+          color="#fffb00"
+          gooeyFilter={{ id: "custom-goo-filter", strength: 10 }}
+          gooeyEnabled
+          gooStrength={20}
+        />
+      </div>
       <div className="container">
         {/* <Noise
           patternSize={250}
@@ -26,18 +40,20 @@ export default function Home() {
         />
         <div className="glass-container">
 
-          <span style={{ fontSize: "60px", color: "#ddb772", WebkitTextStroke: "2px black" }}>crit.</span>
-          <Button>
-            <span style={{ fontSize: "24px" }}>Get started!</span>
-          </Button>
-          <span style={{ fontSize: "18px", fontFamily: "Mansalva", color: "#EDE9E6", textAlign: "center" }}>
+          <span style={{ fontSize: "70px", color: "#ddb772", WebkitTextStroke: "2px black", margin: 0, padding: 0, lineHeight: 1 }}>crit.</span>
+          <span style={{ fontSize: "24px", fontFamily: "Mansalva", color: "#EDE9E6", textAlign: "center", marginBottom: "6px" }}>
             {/* The fastest way to level up is to 
             <br /> */}
             pick art, or upload what you want.
-            <br /> jot down your thoughts and ideas, assisted with ai.
-            <br />get sharper, and curate your library, track your progress.
+            jot down your thoughts and ideas, assisted with ai.
+            <br />get sharper, curate your library, track your progress.
             <br />
           </span>
+          <div style={{ zIndex: 100 }}>
+          <Button>
+            <span style={{ fontSize: "24px" }}>Get started!</span>
+          </Button>
+          </div>
         </div>
       </div>
     </>

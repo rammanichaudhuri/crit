@@ -1,6 +1,7 @@
 'use client';
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
+import { useRouter } from 'next/navigation';
 
 import './Aurora.css';
 
@@ -93,8 +94,13 @@ export default function Aurora(props) {
   const ctnDom = useRef(null);
   const bubbleRef = useRef(null);
 
+  const router = useRouter();
+
+  console.log("page");
+
   useEffect(() => {
     const ctn = ctnDom.current;
+    console.log(ctnDom);
     if (!ctn) return;
 
     const renderer = new Renderer({
@@ -110,16 +116,15 @@ export default function Aurora(props) {
     let program;
 
     function resize() {
+      if (!ctn) return;
       const width = ctn.offsetWidth;
       const height = ctn.offsetHeight;
-      if (!width || !height) return;
       renderer.setSize(width, height);
       if (program) {
         program.uniforms.uResolution.value = [width, height];
       }
     }
-    const ro = new ResizeObserver(resize);
-    ro.observe(ctn);
+    window.addEventListener('resize', resize);
 
     const geometry = new Triangle(gl);
     if (geometry.attributes.uv) {
@@ -202,18 +207,22 @@ export default function Aurora(props) {
 
     resize();
 
+    console.log("page reload");
+
     return () => {
       cancelAnimationFrame(animateId);
-      ro.disconnect();
+      window.removeEventListener('resize', resize);
       if (ctn && gl.canvas.parentNode === ctn) {
         ctn.removeChild(gl.canvas);
       }
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
+      renderer.dispose();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amplitude]);
+  }, [amplitude, router.asPath]);
 
   return (
-    <div ref={ctnDom} className="aurora-container">
+    <div key={router.asPath} ref={ctnDom} className="aurora-container">
       <canvas ref={bubbleRef} style={{ position: "absolute", height: "100%", width: "100%" }}>
       </canvas>
     </div>

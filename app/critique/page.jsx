@@ -14,8 +14,7 @@ export default function CritiquePage() {
 
   return (
     <div className="min-h-screen bg-[#EDE9E6]">
-      <Nav />
-      <main className="flex h-screen pt-[57px]">
+      <main className="flex h-screen pt-[90px]">
         {/* Image panel */}
         <div className="w-1/2 relative bg-[#D4CEC9] flex items-center justify-center overflow-hidden">
           <img

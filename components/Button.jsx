@@ -45,7 +45,7 @@ export default function Button({
       href={href}
       onClick={onClick}
       className={`btn glass`}
-      style={{ height: `${height}px`, width: `${width}px` }}
+      style={{ height: `${height}px`, width: `${width}px`, zIndex: 100 }}
     >
       {/* wavy liquid fill */}
       <span className="fillWrap">

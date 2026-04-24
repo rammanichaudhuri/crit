@@ -13,8 +13,7 @@ const artworks = [
 export default function LibraryPage() {
   return (
     <div className="min-h-screen bg-[#EDE9E6]">
-      <Nav />
-      <main className="pt-[57px] px-8 pb-16">
+      <main className="pt-[90px] px-8 pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="py-10 flex items-end justify-between border-b border-[#D4CEC9]">
             <div>
