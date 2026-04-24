@@ -1,6 +1,5 @@
 'use client'
 
-import { useRef } from 'react';
 import './page.css';
 import Aurora from '../components/Aurora.jsx';
 import Nav from '../components/navbar/Navbar.jsx';
@@ -8,11 +7,9 @@ import Button from '../components/Button';
 import PixelTrail from '../components/PixelTrail';
 
 export default function Home() {
-  const trailRef = useRef(null);
-
   return (
     <>
-      <div ref={trailRef} style={{ position: "absolute", top: 0, left: 0, height: "100dvh", width: "100dvw" }}>
+      <div style={{ position: "absolute", top: 0, left: 0, height: "100dvh", width: "100dvw" }}>
         <PixelTrail
           gridSize={100}
           trailSize={0.08}
@@ -22,7 +19,6 @@ export default function Home() {
           gooeyFilter={{ id: "custom-goo-filter", strength: 10 }}
           gooeyEnabled
           gooStrength={20}
-          containerRef={trailRef}
         />
       </div>
       <div className="container">
