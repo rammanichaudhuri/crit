@@ -1,62 +1,148 @@
 'use client';
+
 import { useState } from 'react';
 
-export default function CritiquePage() {
-  const [text, setText] = useState('');
-  const [wordCount, setWordCount] = useState(0);
+const SECTIONS = [
+  {
+    key: 'works',
+    label: 'What works',
+    symbol: '✓',
+    symbolColor: '#4ade80',
+    placeholder: 'Composition, light, colour — what lands and why?',
+  },
+  {
+    key: 'doesnt',
+    label: "What doesn't",
+    symbol: '✗',
+    symbolColor: '#f87171',
+    placeholder: 'What feels off? Proportion, tension, clarity, balance...',
+  },
+  {
+    key: 'improve',
+    label: 'How to improve',
+    symbol: '→',
+    symbolColor: '#648de5',
+    placeholder: 'Concrete changes — what would you push, cut, or rethink?',
+  },
+];
 
-  function handleChange(e) {
-    const val = e.target.value;
-    setText(val);
-    setWordCount(val.trim() === '' ? 0 : val.trim().split(/\s+/).length);
+const MOCK_AI = `The composition leans on symmetry — stable, but risks feeling inert. Warm tones in the lower third anchor the piece well, though the shift to cooler values mid-frame is abrupt; a softer gradient would unify the palette. The focal point reads clearly. Introducing a secondary element off-axis would add visual tension without breaking the harmony.`;
+
+export default function CritiquePage() {
+  const [notes, setNotes] = useState({ works: '', doesnt: '', improve: '' });
+  const [showAI, setShowAI] = useState(false);
+  const [aiLoading, setAiLoading] = useState(false);
+
+  const totalWords = Object.values(notes).join(' ').trim().split(/\s+/).filter(Boolean).length;
+
+  function handleAI() {
+    if (showAI) { setShowAI(false); return; }
+    setAiLoading(true);
+    setTimeout(() => { setAiLoading(false); setShowAI(true); }, 1200);
   }
 
   return (
-    <div className="min-h-screen bg-[#EDE9E6] min-w-screen">
-      <main className="flex h-screen pt-[90px]">
-        {/* Image panel */}
-        <div className="w-1/2 relative bg-[#D4CEC9] flex items-center justify-center overflow-hidden">
+    <div style={{ height: '100vh', background: '#EDE9E6', color: '#2C2825', overflow: 'hidden' }}>
+      <main className="flex h-full pt-[84px]">
+
+        {/* ── Left: image ── */}
+        <div
+          className="relative flex-shrink-0 flex items-center justify-center overflow-hidden"
+          style={{ width: '44%', background: '#D4CEC9' }}
+        >
           <img
             src="/images/bg1.jpg"
-            alt="Artwork for critique"
+            alt="Artwork under critique"
             className="w-full h-full object-contain"
           />
-          <div className="absolute bottom-4 left-4 text-xs text-[#5C5650] bg-[#EDE9E6]/80 backdrop-blur-sm px-3 py-1.5 rounded-full">
-            Untitled — 2024
+
+          <div
+            className="absolute bottom-5 left-5 text-xs px-3 py-1.5 rounded-full"
+            style={{ background: 'rgba(237,233,230,0.85)', backdropFilter: 'blur(8px)', color: '#5C5650', border: '1px solid #D4CEC9' }}
+          >
+            Untitled I — 2024 · Oil on canvas
           </div>
+
+          <Link
+            href="/library"
+            className="absolute top-5 left-5 text-xs px-3 py-1.5 rounded-full transition-colors"
+            style={{ background: 'rgba(237,233,230,0.85)', backdropFilter: 'blur(8px)', color: '#5C5650', border: '1px solid #D4CEC9' }}
+          >
+            ← Library
+          </Link>
         </div>
 
-        {/* Writing panel */}
-        <div className="w-1/2 flex flex-col bg-[#EDE9E6]">
-          <div className="flex items-center justify-between px-8 py-4 border-b border-[#D4CEC9]">
-            <span className="text-sm font-medium text-[#2C2825]">Your Critique</span>
-            <span className="text-xs text-[#9C9690]">{wordCount} {wordCount === 1 ? 'word' : 'words'}</span>
+        {/* ── Right: all sections visible at once ── */}
+        <div className="flex-1 flex flex-col overflow-hidden" style={{ borderLeft: '1px solid #D4CEC9' }}>
+
+          {/* top bar */}
+          <div
+            className="flex items-center justify-between px-8 py-4 flex-shrink-0"
+            style={{ borderBottom: '1px solid #D4CEC9' }}
+          >
+            <span style={{ fontFamily: 'Mansalva', fontSize: 20, color: '#ddb772' }}>your critique.</span>
+            <span className="text-xs" style={{ color: '#9C9690' }}>
+              {totalWords} {totalWords === 1 ? 'word' : 'words'}
+            </span>
           </div>
 
-          <textarea
-            value={text}
-            onChange={handleChange}
-            placeholder="What do you see? Start with your first impression — composition, light, mood..."
-            className="flex-1 w-full px-8 py-6 bg-transparent resize-none text-[#2C2825] placeholder-[#B4AEA8] text-base leading-relaxed focus:outline-none font-[var(--font-geist-sans)]"
-          />
+          {/* three sections — all visible, scrollable */}
+          <div className="flex-1 overflow-y-auto">
+            {SECTIONS.map((s, i) => (
+              <div
+                key={s.key}
+                style={{ borderBottom: i < SECTIONS.length - 1 ? '1px solid #D4CEC9' : 'none' }}
+              >
+                {/* section label */}
+                <div className="flex items-center gap-2 px-8 pt-5 pb-2">
+                  <span className="text-sm font-semibold" style={{ color: s.symbolColor }}>{s.symbol}</span>
+                  <span className="text-xs font-medium uppercase tracking-widest" style={{ color: '#9C9690' }}>{s.label}</span>
+                </div>
 
-          <div className="flex items-center justify-between px-8 py-4 border-t border-[#D4CEC9]">
-            <div className="flex gap-2">
-              <button className="text-xs text-[#5C5650] px-3 py-1.5 rounded-full border border-[#D4CEC9] hover:border-[#9C9690] transition-colors">
-                Composition
-              </button>
-              <button className="text-xs text-[#5C5650] px-3 py-1.5 rounded-full border border-[#D4CEC9] hover:border-[#9C9690] transition-colors">
-                Colour
-              </button>
-              <button className="text-xs text-[#5C5650] px-3 py-1.5 rounded-full border border-[#D4CEC9] hover:border-[#9C9690] transition-colors">
-                Emotion
-              </button>
-            </div>
+                <textarea
+                  value={notes[s.key]}
+                  onChange={e => setNotes(n => ({ ...n, [s.key]: e.target.value }))}
+                  placeholder={s.placeholder}
+                  rows={4}
+                  className="w-full px-8 pb-5 bg-transparent resize-none text-sm leading-relaxed focus:outline-none"
+                  style={{ color: '#2C2825', caretColor: s.symbolColor }}
+                />
+              </div>
+            ))}
+
+            {/* AI panel */}
+            {showAI && (
+              <div className="mx-8 my-4 rounded-xl p-5" style={{ background: 'rgba(100,141,229,0.06)', border: '1px solid rgba(100,141,229,0.2)' }}>
+                <p className="text-xs font-semibold mb-2 uppercase tracking-widest" style={{ color: '#648de5' }}>AI insight</p>
+                <p className="text-sm leading-relaxed" style={{ color: '#5C5650' }}>{MOCK_AI}</p>
+              </div>
+            )}
+          </div>
+
+          {/* bottom bar */}
+          <div
+            className="flex items-center justify-between px-8 py-4 flex-shrink-0"
+            style={{ borderTop: '1px solid #D4CEC9' }}
+          >
             <button
-              disabled={wordCount < 5}
-              className="px-5 py-1.5 bg-[#2C2825] text-[#EDE9E6] text-sm rounded-full disabled:opacity-30 hover:bg-[#4A4540] transition-colors disabled:cursor-not-allowed"
+              onClick={handleAI}
+              className="text-xs px-4 py-2 rounded-full transition-colors flex items-center gap-2"
+              style={showAI
+                ? { background: 'rgba(100,141,229,0.1)', color: '#648de5', border: '1px solid rgba(100,141,229,0.25)' }
+                : { border: '1px solid #D4CEC9', color: '#9C9690' }}
             >
-              Submit
+              <span>{aiLoading ? '…' : '✦'}</span>
+              {aiLoading ? 'Thinking…' : showAI ? 'Hide insight' : 'AI insight'}
+            </button>
+
+            <button
+              disabled={totalWords < 5}
+              className="px-6 py-2 rounded-full text-sm font-medium transition-all"
+              style={totalWords >= 5
+                ? { background: '#2C2825', color: '#EDE9E6' }
+                : { background: '#D4CEC9', color: '#B4AEA8', cursor: 'not-allowed' }}
+            >
+              Save critique
             </button>
           </div>
         </div>
