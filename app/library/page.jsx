@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import Nav from '../../components/Nav.jsx';
 
 const artworks = [
   { id: 1, src: '/images/bg1.jpg', title: 'Untitled I', year: '2024', medium: 'Oil on canvas' },
@@ -12,7 +11,7 @@ const artworks = [
 
 export default function LibraryPage() {
   return (
-    <div className="min-h-screen bg-[#EDE9E6]">
+    <div className="min-h-screen bg-[#EDE9E6] min-w-screen overflow-y-auto">
       <main className="pt-[90px] px-8 pb-16">
         <div className="max-w-6xl mx-auto">
           <div className="py-10 flex items-end justify-between border-b border-[#D4CEC9]">

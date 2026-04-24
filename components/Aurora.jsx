@@ -2,6 +2,7 @@
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
 import { usePathname } from 'next/navigation';
+import { useRouter } from "next/navigation";
 
 import './Aurora.css';
 
@@ -95,6 +96,7 @@ export default function Aurora(props) {
   const bubbleRef = useRef(null);
 
   const pathname = usePathname();
+  const router = useRouter();
 
   useEffect(() => {
     const ctn = ctnDom.current;
@@ -206,20 +208,24 @@ export default function Aurora(props) {
 
     resize();
 
+    router.refresh();
+
     return () => {
+      geometry.remove();
+      program.remove();
       cancelAnimationFrame(animateId);
       cancelAnimationFrame(bubbleAnimId);
       window.removeEventListener('resize', resize);
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
       if (ctn && gl.canvas.parentNode === ctn) {
         ctn.removeChild(gl.canvas);
       }
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amplitude, pathname]);
+  }, [amplitude, router.asPath]);
 
   return (
-    <div key={pathname} ref={ctnDom} className="aurora-container">
+    <div key={router.asPath} ref={ctnDom} className="aurora-container">
       <canvas ref={bubbleRef} style={{ position: "absolute", height: "100%", width: "100%" }}>
       </canvas>
     </div>

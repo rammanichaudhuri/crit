@@ -1,6 +1,5 @@
 'use client';
 import { useState } from 'react';
-import Nav from '../../components/Nav.jsx';
 
 export default function CritiquePage() {
   const [text, setText] = useState('');
@@ -13,7 +12,7 @@ export default function CritiquePage() {
   }
 
   return (
-    <div className="min-h-screen bg-[#EDE9E6]">
+    <div className="min-h-screen bg-[#EDE9E6] min-w-screen">
       <main className="flex h-screen pt-[90px]">
         {/* Image panel */}
         <div className="w-1/2 relative bg-[#D4CEC9] flex items-center justify-center overflow-hidden">
