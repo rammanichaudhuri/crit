@@ -1,7 +1,7 @@
 'use client';
 import { Renderer, Program, Mesh, Color, Triangle } from 'ogl';
 import { useEffect, useRef } from 'react';
-import { useRouter } from 'next/navigation';
+import { usePathname } from 'next/navigation';
 
 import './Aurora.css';
 
@@ -94,9 +94,7 @@ export default function Aurora(props) {
   const ctnDom = useRef(null);
   const bubbleRef = useRef(null);
 
-  const router = useRouter();
-
-  console.log("page");
+  const pathname = usePathname();
 
   useEffect(() => {
     const ctn = ctnDom.current;
@@ -147,6 +145,7 @@ export default function Aurora(props) {
       opacity: Math.random() * 0.5 + 0.5,
     }));
 
+    let bubbleAnimId = 0;
     function drawBubbles() {
       bctx.clearRect(0, 0, bc.width, bc.height);
       for (const b of bubbles) {
@@ -171,9 +170,9 @@ export default function Aurora(props) {
           b.x = Math.random() * bc.width;
         }
       }
-      requestAnimationFrame(drawBubbles);
+      bubbleAnimId = requestAnimationFrame(drawBubbles);
     }
-    drawBubbles();
+    bubbleAnimId = requestAnimationFrame(drawBubbles);
 
     program = new Program(gl, {
       vertex: VERT,
@@ -207,22 +206,20 @@ export default function Aurora(props) {
 
     resize();
 
-    console.log("page reload");
-
     return () => {
       cancelAnimationFrame(animateId);
+      cancelAnimationFrame(bubbleAnimId);
       window.removeEventListener('resize', resize);
+      gl.getExtension('WEBGL_lose_context')?.loseContext();
       if (ctn && gl.canvas.parentNode === ctn) {
         ctn.removeChild(gl.canvas);
       }
-      gl.getExtension('WEBGL_lose_context')?.loseContext();
-      renderer.dispose();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [amplitude, router.asPath]);
+  }, [amplitude, pathname]);
 
   return (
-    <div key={router.asPath} ref={ctnDom} className="aurora-container">
+    <div key={pathname} ref={ctnDom} className="aurora-container">
       <canvas ref={bubbleRef} style={{ position: "absolute", height: "100%", width: "100%" }}>
       </canvas>
     </div>

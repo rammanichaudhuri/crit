@@ -1,17 +1,18 @@
 'use client'
 
-import Link from 'next/link';
+import { useRef } from 'react';
 import './page.css';
 import Aurora from '../components/Aurora.jsx';
-import Noise from '../components/Noise';
 import Nav from '../components/navbar/Navbar.jsx';
 import Button from '../components/Button';
 import PixelTrail from '../components/PixelTrail';
 
 export default function Home() {
+  const trailRef = useRef(null);
+
   return (
     <>
-      <div style={{ position: "absolute", top: 0, left: 0, height: "100dvh", width: "100dvw" }}>
+      <div ref={trailRef} style={{ position: "absolute", top: 0, left: 0, height: "100dvh", width: "100dvw" }}>
         <PixelTrail
           gridSize={100}
           trailSize={0.08}
@@ -21,16 +22,10 @@ export default function Home() {
           gooeyFilter={{ id: "custom-goo-filter", strength: 10 }}
           gooeyEnabled
           gooStrength={20}
+          containerRef={trailRef}
         />
       </div>
       <div className="container">
-        {/* <Noise
-          patternSize={250}
-          patternScaleX={2}
-          patternScaleY={2}
-          patternRefreshInterval={2}
-          patternAlpha={20}
-        /> */}
         <Aurora
           colorTop="#304c89"
           colorWave="#648de5"
@@ -42,17 +37,17 @@ export default function Home() {
 
           <span style={{ fontSize: "70px", color: "#ddb772", WebkitTextStroke: "2px black", margin: 0, padding: 0, lineHeight: 1 }}>crit.</span>
           <span style={{ fontSize: "24px", fontFamily: "Mansalva", color: "#EDE9E6", textAlign: "center", marginBottom: "6px" }}>
-            {/* The fastest way to level up is to 
+            {/* The fastest way to level up is to
             <br /> */}
             pick art, or upload what you want.
             jot down your thoughts and ideas, assisted with ai.
             <br />get sharper, curate your library, track your progress.
             <br />
           </span>
-          <div style={{ zIndex: 100 }}>
-          <Button>
-            <span style={{ fontSize: "24px" }}>Get started!</span>
-          </Button>
+          <div style={{ position: "relative", zIndex: 100 }}>
+            <Button href="/signup">
+              <span style={{ fontSize: "24px" }}>Get started!</span>
+            </Button>
           </div>
         </div>
       </div>
