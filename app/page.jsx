@@ -3,12 +3,19 @@
 import { usePathname } from 'next/navigation';
 import './page.css';
 import Aurora from '../components/Aurora.jsx';
-import Nav from '../components/navbar/Navbar.jsx';
 import Button from '../components/Button';
 import PixelTrail from '../components/PixelTrail';
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
+import Link from 'next/link';
 
 export default function Home() {
-  const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    router.push('/');
+    router.refresh();
+  }, [router]);
 
   return (
     <>
@@ -18,7 +25,7 @@ export default function Home() {
           trailSize={0.08}
           maxAge={1500}
           interpolate={4}
-          color="#fffb00"
+          color="#ffffff"
           gooeyFilter={{ id: "custom-goo-filter", strength: 10 }}
           gooeyEnabled
           gooStrength={20}
@@ -32,6 +39,7 @@ export default function Home() {
           speed={1.8}
           amplitude={0.9}
           blend={0}
+          key={router.asPath}
         />
         <div className="glass-container">
 
@@ -45,9 +53,11 @@ export default function Home() {
             <br />
           </span>
           <div style={{ position: "relative", zIndex: 100 }}>
-            <Button href="/signup">
-              <span style={{ fontSize: "24px" }}>Get started!</span>
-            </Button>
+            <Link href="/signup">
+              <Button>
+                <span style={{ fontSize: "24px" }}>Get started!</span>
+              </Button>
+            </Link>
           </div>
         </div>
       </div>
