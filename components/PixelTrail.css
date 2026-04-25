@@ -2,6 +2,7 @@
   position: absolute;
   overflow: hidden;
   z-index: 4;
+  height: 200vh;
 }
 
 .pixel-canvas {

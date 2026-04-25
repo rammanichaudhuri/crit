@@ -1,7 +1,6 @@
 body {
     background-color: #648de5;
     backdrop-filter: saturate(1.4);
-    height: 100vh;
     width: 100vw;
     display: flex;
     align-items: center;
@@ -10,13 +9,14 @@ body {
 
 .container {
     width: calc(100vw);
-    height: calc(100dvh - 74px);
+    height: calc(100vh - 74px);
     overflow: hidden;
     display: flex;
     background-color: #EDE9E6;
     font-family: "Mansalva", sans-serif;
+    border: none;
+    outline: none;
     /* border-radius: 50px; */
-    position: relative;
 }
 
 .glass-container {
@@ -24,10 +24,20 @@ body {
     position: absolute;
     inset: 0;
     display: flex;
-    width: 100%;
+    width: 100vw;
     height: 100%;
     flex-direction: column;
     font-size: 30px;
-    justify-content: center;
+    padding-top: 20vh;
     align-items: center;
+}
+
+.second-container {
+    width: calc(100vw);
+    height: 140vh;
+    overflow: hidden;
+    display: flex;
+    font-family: "Mansalva", sans-serif;
+    /* border-radius: 50px; */
+    position: sticky;
 }
