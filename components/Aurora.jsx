@@ -226,7 +226,7 @@ export default function Aurora(props) {
 
   return (
     <div key={router.asPath} ref={ctnDom} className="aurora-container">
-      <canvas ref={bubbleRef} style={{ position: "absolute", height: "100%", width: "100%" }}>
+      <canvas ref={bubbleRef} style={{ position: "absolute", height: "100%", width: "100%" }}>       
       </canvas>
     </div>
   );

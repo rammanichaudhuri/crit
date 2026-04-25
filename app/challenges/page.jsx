@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import Nav from '../../components/navbar/Navbar';
 
 const TODAY = {
   title: 'Critique the negative space',
@@ -51,7 +52,18 @@ const STREAK = [
 
 export default function ChallengesPage() {
   return (
-    <div style={{ minHeight: '100vh', background: '#EDE9E6', color: '#2C2825', minWidth: '100vw' }}>
+    <>
+    <div style={{
+        minHeight: 'max-content', color: '#2C2825', fontFamily: 'Sora', position: 'absolute', inset: 0, 
+        backgroundSize: '30px 30px',
+        // backgroundColor: "#ede9e6",
+        backgroundColor: "oklch(100% 0.00011 271.152)",
+        backgroundImage:
+          'conic-gradient(from 90deg at 1px 1px, #74747400 90deg, rgb(181, 181, 181) 0), conic-gradient(from 90deg at 0.5px 0.5px, #61616100 90deg, rgb(170, 170, 170) 0)',
+          inset: 0,
+          backdropFilter: 'saturate(1.4)'
+      }}>
+      <Nav backgroundColor="#ffc4e5" />
       <main className="pt-[100px] pb-20 px-10 max-w-4xl mx-auto">
 
         {/* ── Header ── */}
@@ -166,5 +178,6 @@ export default function ChallengesPage() {
 
       </main>
     </div>
+    </>
   );
 }

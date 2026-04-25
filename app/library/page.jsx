@@ -1,7 +1,9 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
+import Nav from '../../components/navbar/Navbar';
+import { useRouter } from 'next/navigation';
 
 const FILTERS = ['All', 'Painting', 'Digital', 'Photography'];
 
@@ -57,41 +59,41 @@ const ROWS = [
   {
     key: 'sources', label: 'Sources',
     folders: [
-      { id: 'unsplash',   label: 'Unsplash',      symbol: '◈', vi: 0 },
-      { id: 'pexels',     label: 'Pexels',         symbol: '⬡', vi: 1 },
-      { id: 'device',     label: 'My Device',      symbol: '▣', vi: 2 },
-      { id: 'upload',     label: 'Upload',         symbol: '↑', vi: 3, isUpload: true },
-      { id: 'favourites', label: 'Favourites',     symbol: '♥', count: 12, vi: 4 },
+      { id: 'unsplash', label: 'Unsplash', symbol: '◈', vi: 0 },
+      { id: 'pexels', label: 'Pexels', symbol: '⬡', vi: 1 },
+      { id: 'device', label: 'My Device', symbol: '▣', vi: 2 },
+      { id: 'upload', label: 'Upload', symbol: '↑', vi: 3, isUpload: true },
+      { id: 'favourites', label: 'Favourites', symbol: '♥', count: 12, vi: 4 },
     ],
   },
   {
     key: 'status', label: 'Status',
     folders: [
-      { id: 'done',       label: 'Done',           symbol: '✓', count: 6, vi: 5 },
-      { id: 'todo',       label: 'To Do',          symbol: '◯', count: 3, vi: 6 },
-      { id: 'inprogress', label: 'In Progress',    symbol: '◑', count: 2, vi: 7 },
+      { id: 'done', label: 'Done', symbol: '✓', count: 6, vi: 5 },
+      { id: 'todo', label: 'To Do', symbol: '◯', count: 3, vi: 6 },
+      { id: 'inprogress', label: 'In Progress', symbol: '◑', count: 2, vi: 7 },
     ],
   },
   {
     key: 'discover', label: 'Discover',
     folders: [
-      { id: 'hot',        label: 'Hot Now',        symbol: '▲', vi: 8 },
-      { id: 'outside',    label: 'Search Outside', symbol: '⊕', vi: 9 },
-      { id: 'shared',     label: 'Shared',         symbol: '↗', count: 8, vi: 10 },
+      { id: 'hot', label: 'Hot Now', symbol: '▲', vi: 8 },
+      { id: 'outside', label: 'Search Outside', symbol: '⊕', vi: 9 },
+      { id: 'shared', label: 'Shared', symbol: '↗', count: 8, vi: 10 },
     ],
   },
 ];
 
 const FOLDER_ROT = [-1.2, 0.8, -0.5, 1.0, -0.7, 0.6, -1.4, 0.9, -0.3, 1.1, -0.8];
-const CARD_ROT   = [-1.5, 0.8, -0.6, 1.2, -1.8, 0.4];
+const CARD_ROT = [-1.5, 0.8, -0.6, 1.2, -1.8, 0.4];
 
 const artworks = [
-  { id: 1, src: '/images/bg1.jpg', title: 'Untitled I',   year: '2024', medium: 'Painting' },
+  { id: 1, src: '/images/bg1.jpg', title: 'Untitled I', year: '2024', medium: 'Painting' },
   { id: 2, src: '/images/bg2.gif', title: 'Motion Study', year: '2023', medium: 'Digital' },
-  { id: 3, src: '/images/bg3.gif', title: 'Flow',         year: '2023', medium: 'Digital' },
-  { id: 4, src: '/images/bg4.gif', title: 'Cycle',        year: '2024', medium: 'Digital' },
-  { id: 5, src: '/images/bg5.jpg', title: 'Still Life',   year: '2022', medium: 'Photography' },
-  { id: 6, src: '/images/bg1.jpg', title: 'Untitled II',  year: '2024', medium: 'Painting' },
+  { id: 3, src: '/images/bg3.gif', title: 'Flow', year: '2023', medium: 'Digital' },
+  { id: 4, src: '/images/bg4.gif', title: 'Cycle', year: '2024', medium: 'Digital' },
+  { id: 5, src: '/images/bg5.jpg', title: 'Still Life', year: '2022', medium: 'Photography' },
+  { id: 6, src: '/images/bg1.jpg', title: 'Untitled II', year: '2024', medium: 'Painting' },
 ];
 
 // Wobbly hand-drawn SVG circle around text
@@ -149,8 +151,8 @@ function FolderCard({ label, symbol, count, isUpload, active, onClick, rotation,
         boxShadow: active
           ? '3px 5px 14px rgba(200,75,58,.4)'
           : hovered
-          ? '4px 6px 18px rgba(0,0,0,.18), 2px 2px 4px rgba(0,0,0,.08)'
-          : '2px 3px 8px rgba(0,0,0,.12), 1px 1px 3px rgba(0,0,0,.06)',
+            ? '4px 6px 18px rgba(0,0,0,.18), 2px 2px 4px rgba(0,0,0,.08)'
+            : '2px 3px 8px rgba(0,0,0,.12), 1px 1px 3px rgba(0,0,0,.06)',
         transform: `rotate(${rotation}deg) translateY(${hovered ? '-2px' : '0'})`,
         transition: 'box-shadow .2s, transform .2s',
       }}
@@ -205,7 +207,7 @@ function PolaroidCard({ src, title, year, medium, rotation, href }) {
 function OceanBackdrop() {
   return (
     <div style={{ position: 'fixed', inset: 0, zIndex: -1, overflow: 'hidden' }}>
-      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#C4E6F4 0%,#A0CEE6 22%,#7AB4D6 44%,#58A0C8 58%,#4590B8 72%,#3880A8 85%,#2A6D98 100%)' }} />
+      <div style={{ position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#C4E6F4 0%,#96B9FF 22%,#7AB4D6 44%,#58A0C8 58%,#254DA2 72%,#3880A8 85%,#0A1240 100%)' }} />
       {/* sun */}
       <div style={{ position: 'absolute', top: '10%', right: '20%', width: 72, height: 72, borderRadius: '50%', background: 'rgba(255,234,160,.65)', boxShadow: '0 0 70px 35px rgba(255,230,150,.2)', filter: 'blur(5px)' }} />
       {/* water shimmer */}
@@ -222,11 +224,11 @@ function OceanBackdrop() {
 }
 
 export default function LibraryPage() {
-  const [filter, setFilter]             = useState('All');
+  const [filter, setFilter] = useState('All');
   const [activeFolder, setActiveFolder] = useState(null);
-  const [search, setSearch]             = useState('');
-  const [dragging, setDragging]         = useState(false);
-  const inputRef                        = useRef(null);
+  const [search, setSearch] = useState('');
+  const [dragging, setDragging] = useState(false);
+  const inputRef = useRef(null);
 
   const filtered = artworks.filter(w => {
     const byMedium = filter === 'All' || w.medium === filter;
@@ -242,16 +244,26 @@ export default function LibraryPage() {
 
   return (
     <>
-      <OceanBackdrop />
-      <div style={{ minHeight: '100vh', color: '#2C2825' }}>
-        <main className="pt-[100px] pb-20 px-8 max-w-7xl mx-auto">
+      {/* <OceanBackdrop /> */}
+      <div style={{
+        minHeight: 'max-content', color: '#2C2825', fontFamily: 'Sora', position: 'absolute', inset: 0, 
+        backgroundSize: '30px 30px',
+        // backgroundColor: "#ede9e6",
+        backgroundColor: "oklch(100% 0.00011 271.152)",
+        backgroundImage:
+          'conic-gradient(from 90deg at 1px 1px, #74747400 90deg, rgb(181, 181, 181) 0), conic-gradient(from 90deg at 0.5px 0.5px, #61616100 90deg, rgb(170, 170, 170) 0)',
+          inset: 0,
+          backdropFilter: 'saturate(1.4)'
+      }}>
+        <Nav backgroundColor="#ffc4e5" />
+        <main className="mx-auto min-h-screen">
 
           {/* ── Sketchbook page ── */}
           <div style={{
-            background: 'rgba(255,248,242,.96)',
+            // background: 'rgba(255,248,242,.96)',
             borderRadius: '3px 5px 4px 2px / 5px 3px 4px 3px',
             padding: '40px 48px 52px',
-            boxShadow: '0 10px 40px rgba(0,0,0,.2), 0 2px 8px rgba(0,0,0,.1), inset 0 1px 0 rgba(255,255,255,.9)',
+            // boxShadow: '0 10px 40px rgba(0,0,0,.2), 0 2px 8px rgba(0,0,0,.1), inset 0 1px 0 rgba(255,255,255,.9)',
           }}>
 
             {/* Header */}
@@ -309,7 +321,7 @@ export default function LibraryPage() {
               ))}
             </div>
 
-            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={() => {}} />
+            <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={() => { }} />
 
             {/* ── Gallery ── */}
             {filtered.length === 0 ? (
@@ -363,7 +375,7 @@ export default function LibraryPage() {
 
           </div>
         </main>
-      </div>
+      </div >
     </>
   );
 }

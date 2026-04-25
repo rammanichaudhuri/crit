@@ -12,7 +12,7 @@ const NAV_LINKS = [
     { label: 'Community', href: '/community' },
 ];
 
-export default function Nav() {
+export default function Nav({ backgroundColor }) {
     const [scrolled, setScrolled] = useState(false);
 
     useEffect(() => {
@@ -22,7 +22,7 @@ export default function Nav() {
     }, []);
 
     return (
-        <nav className='nav'>
+        <nav className='nav' style={{ backgroundColor: backgroundColor ? backgroundColor : 'transparent' }}>
             <div className='inner'>
                 {/* logo */}
                 <Link href="/" className='logo' style={{ display: "flex", alignItems: "center", gap: "3px", zIndex: 10 }}>
