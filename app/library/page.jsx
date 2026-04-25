@@ -87,6 +87,31 @@ const ROWS = [
 const FOLDER_ROT = [-1.2, 0.8, -0.5, 1.0, -0.7, 0.6, -1.4, 0.9, -0.3, 1.1, -0.8];
 const CARD_ROT = [-1.5, 0.8, -0.6, 1.2, -1.8, 0.4];
 
+// ── Paper variants for artwork cards in the gallery ───────────────────────
+const ART_PAPER = [
+  { bg: '#FFF8F2', pat: null,                                                                                   text: '#5C3A1E', sub: '#9C7060' },  // 0 blank cream
+  { bg: '#F4A5A5', pat: null,                                                                                   text: '#5C1E1E', sub: '#7A3030' },  // 1 pink sticky
+  {                                                                                                              // 2 peach plaid
+    bg: '#FFCBA4',
+    pat: 'repeating-linear-gradient(rgba(180,100,60,.22) 0,rgba(180,100,60,.22) 1px,transparent 1px,transparent 10px),repeating-linear-gradient(90deg,rgba(180,100,60,.22) 0,rgba(180,100,60,.22) 1px,transparent 1px,transparent 10px)',
+    patSize: '10px 10px',
+    text: '#5C3A1E', sub: '#9C7A60',
+  },
+  {                                                                                                              // 3 dark dotted
+    bg: '#5C3A1E',
+    pat: 'radial-gradient(circle,rgba(255,255,255,.28) 1.5px,transparent 1.5px)',
+    patSize: '8px 8px',
+    text: '#FFF8F0', sub: 'rgba(255,240,220,.6)',
+  },
+  {                                                                                                              // 4 grid paper
+    bg: '#FFF8F0',
+    pat: 'repeating-linear-gradient(rgba(200,100,80,.28) 0,rgba(200,100,80,.28) 1px,transparent 1px,transparent 14px),repeating-linear-gradient(90deg,rgba(200,100,80,.28) 0,rgba(200,100,80,.28) 1px,transparent 1px,transparent 14px)',
+    patSize: '14px 14px',
+    text: '#2C2825', sub: '#9C7060',
+  },
+  { bg: '#F5EDE0', pat: null,                                                                                   text: '#2C2825', sub: '#9C7060' },  // 5 parchment
+];
+
 const artworks = [
   { id: 1, src: '/images/bg1.jpg', title: 'Untitled I', year: '2024', medium: 'Painting' },
   { id: 2, src: '/images/bg2.gif', title: 'Motion Study', year: '2023', medium: 'Digital' },
@@ -172,9 +197,10 @@ function FolderCard({ label, symbol, count, isUpload, active, onClick, rotation,
   );
 }
 
-// Polaroid gallery card
-function PolaroidCard({ src, title, year, medium, rotation, href }) {
+// Paper stationery artwork card — image mounted on coloured paper
+function ArtCard({ src, title, year, medium, rotation, href, vi }) {
   const [hovered, setHovered] = useState(false);
+  const v = ART_PAPER[vi % ART_PAPER.length];
   return (
     <Link
       href={href}
@@ -182,23 +208,31 @@ function PolaroidCard({ src, title, year, medium, rotation, href }) {
       onMouseLeave={() => setHovered(false)}
       style={{
         display: 'block',
-        background: '#FFF8F2',
-        padding: '8px 8px 38px',
-        border: '1px solid rgba(44,40,37,.07)',
-        boxShadow: hovered ? '4px 8px 26px rgba(0,0,0,.22)' : '2px 4px 14px rgba(0,0,0,.14)',
-        transform: `rotate(${rotation}deg) translateY(${hovered ? '-4px' : '0'})`,
-        transition: 'all .3s ease',
-        borderRadius: '1px',
+        textDecoration: 'none',
+        backgroundColor: v.bg,
+        backgroundImage: v.pat ?? undefined,
+        backgroundSize: v.patSize,
+        border: '2px solid #2C2825',
+        borderRadius: '2px 7px 4px 3px / 6px 2px 7px 3px',
+        overflow: 'hidden',
+        boxShadow: hovered
+          ? '4px 6px 18px rgba(0,0,0,.2), 2px 2px 6px rgba(0,0,0,.1)'
+          : '2px 4px 12px rgba(0,0,0,.12), 1px 1px 4px rgba(0,0,0,.07)',
+        transform: `rotate(${rotation}deg) translateY(${hovered ? '-3px' : '0'})`,
+        transition: 'all .25s ease',
       }}
     >
-      <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#EDE9E6' }}>
-        <img
-          src={src} alt={title}
-          style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transform: hovered ? 'scale(1.05)' : 'scale(1)', transition: 'transform .5s ease' }}
-        />
+      <div style={{ padding: '6px 6px 0' }}>
+        <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#D8CEC4' }}>
+          <img src={src} alt={title}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform .5s ease' }}
+          />
+        </div>
       </div>
-      <p style={{ fontFamily: 'Mansalva', fontSize: 12, color: '#5C3A1E', textAlign: 'center', marginTop: 8 }}>{title}</p>
-      <p style={{ fontSize: 10, color: '#9C7A60', textAlign: 'center', marginTop: 2 }}>{medium} · {year}</p>
+      <div style={{ padding: '7px 8px 10px' }}>
+        <p style={{ fontFamily: 'Mansalva', fontSize: 12, color: v.text, lineHeight: 1.2 }}>{title}</p>
+        <p style={{ fontSize: 10, color: v.sub, marginTop: 2 }}>{medium} · {year}</p>
+      </div>
     </Link>
   );
 }
@@ -329,45 +363,72 @@ export default function LibraryPage() {
             ) : (
               <div className="flex gap-8 items-start">
 
-                {/* Featured large polaroid */}
+                {/* Featured — large paper-mounted artwork */}
                 {featured && (
-                  <Link href="/critique" className="group flex-shrink-0" style={{ width: '44%', display: 'block' }}>
-                    <div style={{ background: '#FFF8F2', padding: '10px 10px 54px', boxShadow: '4px 6px 22px rgba(0,0,0,.18)', transform: 'rotate(-1.2deg)', borderRadius: '1px', border: '1px solid rgba(44,40,37,.06)' }}>
-                      <div style={{ aspectRatio: '3/4', overflow: 'hidden', background: '#EDE9E6' }}>
-                        <img src={featured.src} alt={featured.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103" style={{ display: 'block' }} />
-                      </div>
-                      <div className="mt-3 flex items-center justify-between px-1">
-                        <div>
-                          <p style={{ fontFamily: 'Mansalva', fontSize: 18, color: '#5C3A1E' }}>{featured.title}</p>
-                          <p style={{ fontSize: 11, color: '#9C7A60', marginTop: 2 }}>{featured.medium} · {featured.year}</p>
+                  <Link href="/critique" className="group flex-shrink-0" style={{ width: '44%', display: 'block', textDecoration: 'none' }}>
+                    <div style={{
+                      backgroundColor: '#FFF0EB',
+                      backgroundImage: 'repeating-linear-gradient(transparent 0px,transparent 19px,rgba(200,100,80,.38) 19px,rgba(200,100,80,.38) 20px)',
+                      border: '2px solid #2C2825',
+                      borderRadius: '3px 9px 5px 2px / 8px 2px 9px 4px',
+                      overflow: 'hidden',
+                      boxShadow: '4px 6px 20px rgba(0,0,0,.16)',
+                      transform: 'rotate(-0.8deg)',
+                    }}>
+                      <div style={{ padding: '8px 8px 0' }}>
+                        <div style={{ aspectRatio: '3/4', overflow: 'hidden', background: '#D8CEC4' }}>
+                          <img src={featured.src} alt={featured.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103" style={{ display: 'block' }} />
                         </div>
-                        <span className="text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity" style={{ background: '#C84B3A', color: '#fff' }}>critique →</span>
+                      </div>
+                      <div style={{ padding: '12px 12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div>
+                          <p style={{ fontFamily: 'Mansalva', fontSize: 20, color: '#5C3A1E' }}>{featured.title}</p>
+                          <p style={{ fontSize: 11, color: '#9C7060', marginTop: 2 }}>{featured.medium} · {featured.year}</p>
+                        </div>
+                        <span className="opacity-0 group-hover:opacity-100 transition-opacity text-xs px-3 py-1"
+                          style={{ background: '#C84B3A', color: '#fff', border: '1.5px solid #2C2825', borderRadius: '2px 5px 3px 2px / 4px 2px 5px 3px' }}>
+                          critique →
+                        </span>
                       </div>
                     </div>
                   </Link>
                 )}
 
-                {/* Grid — small polaroids */}
+                {/* Grid — paper stationery art cards */}
                 <div className="flex-1 grid grid-cols-2 gap-6">
-                  {/* Upload slot */}
+                  {/* Upload slot — dotted paper */}
                   <div
                     onDragOver={e => { e.preventDefault(); setDragging(true); }}
                     onDragLeave={() => setDragging(false)}
                     onDrop={e => { e.preventDefault(); setDragging(false); }}
                     onClick={() => inputRef.current?.click()}
-                    style={{ background: '#FFF8F2', padding: '8px 8px 38px', boxShadow: '1px 3px 10px rgba(0,0,0,.1)', transform: `rotate(${CARD_ROT[0]}deg)`, borderRadius: '1px', cursor: 'pointer', border: '1px solid rgba(44,40,37,.06)' }}
+                    style={{
+                      backgroundColor: '#FFF8F2',
+                      backgroundImage: 'radial-gradient(circle,rgba(180,140,100,.3) 1.5px,transparent 1.5px)',
+                      backgroundSize: '12px 12px',
+                      border: '2px solid #2C2825',
+                      borderRadius: '4px 2px 6px 3px / 2px 6px 3px 7px',
+                      overflow: 'hidden',
+                      boxShadow: '1px 3px 8px rgba(0,0,0,.1)',
+                      transform: `rotate(${CARD_ROT[0]}deg)`,
+                      cursor: 'pointer',
+                    }}
                   >
-                    <div className="flex flex-col items-center justify-center gap-2"
-                      style={{ aspectRatio: '1', border: `1.5px dashed ${dragging ? '#C84B3A' : '#C4A882'}`, background: dragging ? 'rgba(200,75,58,.06)' : 'transparent', transition: 'border-color .2s' }}
-                    >
-                      <span style={{ fontSize: 26, color: dragging ? '#C84B3A' : '#C4A882' }}>+</span>
-                      <p style={{ fontSize: 11, color: '#9C7060' }}>drop or browse</p>
+                    <div style={{ padding: '6px 6px 0' }}>
+                      <div className="flex flex-col items-center justify-center gap-2"
+                        style={{ aspectRatio: '1', border: `1.5px dashed ${dragging ? '#C84B3A' : '#C4A882'}`, background: dragging ? 'rgba(200,75,58,.06)' : 'transparent', transition: 'all .2s' }}
+                      >
+                        <span style={{ fontSize: 26, color: dragging ? '#C84B3A' : '#C4A882' }}>+</span>
+                        <p style={{ fontSize: 11, color: '#9C7060' }}>drop or browse</p>
+                      </div>
                     </div>
-                    <p style={{ fontFamily: 'Mansalva', fontSize: 12, color: '#C4A882', textAlign: 'center', marginTop: 8 }}>new work</p>
+                    <div style={{ padding: '7px 8px 10px' }}>
+                      <p style={{ fontFamily: 'Mansalva', fontSize: 12, color: '#C4A882' }}>new work</p>
+                    </div>
                   </div>
 
                   {rest.map((work, idx) => (
-                    <PolaroidCard key={work.id} src={work.src} title={work.title} year={work.year} medium={work.medium} rotation={CARD_ROT[(idx + 1) % CARD_ROT.length]} href="/critique" />
+                    <ArtCard key={work.id} src={work.src} title={work.title} year={work.year} medium={work.medium} rotation={CARD_ROT[(idx + 1) % CARD_ROT.length]} href="/critique" vi={idx} />
                   ))}
                 </div>
               </div>
