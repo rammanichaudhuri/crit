@@ -85,7 +85,7 @@ const ROWS = [
 ];
 
 const FOLDER_ROT = [-1.2, 0.8, -0.5, 1.0, -0.7, 0.6, -1.4, 0.9, -0.3, 1.1, -0.8];
-const CARD_ROT = [-1.5, 0.8, -0.6, 1.2, -1.8, 0.4];
+const CARD_ROT   = [-0.4, 0.3, -0.5, 0.4, -0.3, 0.5, -0.4];
 
 // ── Paper variants for artwork cards in the gallery ───────────────────────
 const ART_PAPER = [
@@ -113,12 +113,12 @@ const ART_PAPER = [
 ];
 
 const artworks = [
-  { id: 1, src: '/images/bg1.jpg', title: 'Untitled I', year: '2024', medium: 'Painting' },
-  { id: 2, src: '/images/bg2.gif', title: 'Motion Study', year: '2023', medium: 'Digital' },
-  { id: 3, src: '/images/bg3.gif', title: 'Flow', year: '2023', medium: 'Digital' },
-  { id: 4, src: '/images/bg4.gif', title: 'Cycle', year: '2024', medium: 'Digital' },
-  { id: 5, src: '/images/bg5.jpg', title: 'Still Life', year: '2022', medium: 'Photography' },
-  { id: 6, src: '/images/bg1.jpg', title: 'Untitled II', year: '2024', medium: 'Painting' },
+  { id: 1, src: '/images/bg1.jpg', title: 'Untitled I',   year: '2024', medium: 'Painting',   description: 'An exploration of muted earth tones and undefined form, letting the canvas breathe on its own terms.' },
+  { id: 2, src: '/images/bg2.gif', title: 'Motion Study', year: '2023', medium: 'Digital',     description: 'Looping frames that capture the tension between stillness and perpetual movement.' },
+  { id: 3, src: '/images/bg3.gif', title: 'Flow',         year: '2023', medium: 'Digital',     description: 'Fluid paths that resist resolution — always arriving, never quite settling into place.' },
+  { id: 4, src: '/images/bg4.gif', title: 'Cycle',        year: '2024', medium: 'Digital',     description: 'Repetition as structure: each loop quietly reframes everything that came before it.' },
+  { id: 5, src: '/images/bg5.jpg', title: 'Still Life',   year: '2022', medium: 'Photography', description: 'Ordinary objects under deliberate light, asking to be looked at twice and then once more.' },
+  { id: 6, src: '/images/bg1.jpg', title: 'Untitled II',  year: '2024', medium: 'Painting',    description: 'A companion piece — same palette, different silence, a few inches further from certainty.' },
 ];
 
 // Wobbly hand-drawn SVG circle around text
@@ -197,8 +197,8 @@ function FolderCard({ label, symbol, count, isUpload, active, onClick, rotation,
   );
 }
 
-// Paper stationery artwork card — image mounted on coloured paper
-function ArtCard({ src, title, year, medium, rotation, href, vi }) {
+// Paper stationery artwork card — uniform size, full info
+function ArtCard({ src, title, year, medium, description, rotation, href, vi }) {
   const [hovered, setHovered] = useState(false);
   const v = ART_PAPER[vi % ART_PAPER.length];
   return (
@@ -216,22 +216,28 @@ function ArtCard({ src, title, year, medium, rotation, href, vi }) {
         borderRadius: '2px 7px 4px 3px / 6px 2px 7px 3px',
         overflow: 'hidden',
         boxShadow: hovered
-          ? '4px 6px 18px rgba(0,0,0,.2), 2px 2px 6px rgba(0,0,0,.1)'
+          ? '6px 12px 32px rgba(0,0,0,.22), 2px 4px 8px rgba(0,0,0,.1)'
           : '2px 4px 12px rgba(0,0,0,.12), 1px 1px 4px rgba(0,0,0,.07)',
-        transform: `rotate(${rotation}deg) translateY(${hovered ? '-3px' : '0'})`,
-        transition: 'all .25s ease',
+        transform: `rotate(${rotation}deg) translateY(${hovered ? '-8px' : '0'})`,
+        transition: 'transform .28s ease, box-shadow .28s ease',
       }}
     >
-      <div style={{ padding: '6px 6px 0' }}>
-        <div style={{ aspectRatio: '1', overflow: 'hidden', background: '#D8CEC4' }}>
+      {/* Image — 4:3 ratio */}
+      <div style={{ padding: '10px 10px 0' }}>
+        <div style={{ aspectRatio: '4/3', overflow: 'hidden', background: '#D8CEC4' }}>
           <img src={src} alt={title}
-            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transform: hovered ? 'scale(1.04)' : 'scale(1)', transition: 'transform .5s ease' }}
+            style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block', transform: hovered ? 'scale(1.05)' : 'scale(1)', transition: 'transform .5s ease' }}
           />
         </div>
       </div>
-      <div style={{ padding: '7px 8px 10px' }}>
-        <p style={{ fontFamily: 'Mansalva', fontSize: 12, color: v.text, lineHeight: 1.2 }}>{title}</p>
-        <p style={{ fontSize: 10, color: v.sub, marginTop: 2 }}>{medium} · {year}</p>
+      {/* Caption */}
+      <div style={{ padding: '12px 14px 16px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
+          <span style={{ fontSize: 9, color: v.sub, letterSpacing: '.06em', textTransform: 'uppercase', fontWeight: 700 }}>{medium}</span>
+          <span style={{ fontSize: 10, color: v.sub }}>{year}</span>
+        </div>
+        <p style={{ fontFamily: 'Mansalva', fontSize: 17, color: v.text, lineHeight: 1.2, marginBottom: 7 }}>{title}</p>
+        <p style={{ fontSize: 11, color: v.sub, lineHeight: 1.6 }}>{description}</p>
       </div>
     </Link>
   );
@@ -269,7 +275,6 @@ export default function LibraryPage() {
     const bySearch = !search || w.title.toLowerCase().includes(search.toLowerCase()) || w.medium.toLowerCase().includes(search.toLowerCase());
     return byMedium && bySearch;
   });
-  const [featured, ...rest] = filtered;
 
   function handleFolderClick(f) {
     if (f.isUpload) inputRef.current?.click();
@@ -357,80 +362,49 @@ export default function LibraryPage() {
 
             <input ref={inputRef} type="file" accept="image/*" className="hidden" onChange={() => { }} />
 
-            {/* ── Gallery ── */}
+            {/* ── Gallery — uniform 3-column grid ── */}
             {filtered.length === 0 ? (
               <p style={{ color: '#9C7060' }} className="text-sm">No works found.</p>
             ) : (
-              <div className="flex gap-8 items-start">
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 24 }}>
 
-                {/* Featured — large paper-mounted artwork */}
-                {featured && (
-                  <Link href="/critique" className="group flex-shrink-0" style={{ width: '44%', display: 'block', textDecoration: 'none' }}>
-                    <div style={{
-                      backgroundColor: '#FFF0EB',
-                      backgroundImage: 'repeating-linear-gradient(transparent 0px,transparent 19px,rgba(200,100,80,.38) 19px,rgba(200,100,80,.38) 20px)',
-                      border: '2px solid #2C2825',
-                      borderRadius: '3px 9px 5px 2px / 8px 2px 9px 4px',
-                      overflow: 'hidden',
-                      boxShadow: '4px 6px 20px rgba(0,0,0,.16)',
-                      transform: 'rotate(-0.8deg)',
-                    }}>
-                      <div style={{ padding: '8px 8px 0' }}>
-                        <div style={{ aspectRatio: '3/4', overflow: 'hidden', background: '#D8CEC4' }}>
-                          <img src={featured.src} alt={featured.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-103" style={{ display: 'block' }} />
-                        </div>
-                      </div>
-                      <div style={{ padding: '12px 12px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                        <div>
-                          <p style={{ fontFamily: 'Mansalva', fontSize: 20, color: '#5C3A1E' }}>{featured.title}</p>
-                          <p style={{ fontSize: 11, color: '#9C7060', marginTop: 2 }}>{featured.medium} · {featured.year}</p>
-                        </div>
-                        <span className="opacity-0 group-hover:opacity-100 transition-opacity text-xs px-3 py-1"
-                          style={{ background: '#C84B3A', color: '#fff', border: '1.5px solid #2C2825', borderRadius: '2px 5px 3px 2px / 4px 2px 5px 3px' }}>
-                          critique →
-                        </span>
-                      </div>
-                    </div>
-                  </Link>
-                )}
-
-                {/* Grid — paper stationery art cards */}
-                <div className="flex-1 grid grid-cols-2 gap-6">
-                  {/* Upload slot — dotted paper */}
-                  <div
-                    onDragOver={e => { e.preventDefault(); setDragging(true); }}
-                    onDragLeave={() => setDragging(false)}
-                    onDrop={e => { e.preventDefault(); setDragging(false); }}
-                    onClick={() => inputRef.current?.click()}
-                    style={{
-                      backgroundColor: '#FFF8F2',
-                      backgroundImage: 'radial-gradient(circle,rgba(180,140,100,.3) 1.5px,transparent 1.5px)',
-                      backgroundSize: '12px 12px',
-                      border: '2px solid #2C2825',
-                      borderRadius: '4px 2px 6px 3px / 2px 6px 3px 7px',
-                      overflow: 'hidden',
-                      boxShadow: '1px 3px 8px rgba(0,0,0,.1)',
-                      transform: `rotate(${CARD_ROT[0]}deg)`,
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <div style={{ padding: '6px 6px 0' }}>
-                      <div className="flex flex-col items-center justify-center gap-2"
-                        style={{ aspectRatio: '1', border: `1.5px dashed ${dragging ? '#C84B3A' : '#C4A882'}`, background: dragging ? 'rgba(200,75,58,.06)' : 'transparent', transition: 'all .2s' }}
-                      >
-                        <span style={{ fontSize: 26, color: dragging ? '#C84B3A' : '#C4A882' }}>+</span>
-                        <p style={{ fontSize: 11, color: '#9C7060' }}>drop or browse</p>
-                      </div>
-                    </div>
-                    <div style={{ padding: '7px 8px 10px' }}>
-                      <p style={{ fontFamily: 'Mansalva', fontSize: 12, color: '#C4A882' }}>new work</p>
+                {/* Upload slot — same footprint as an art card */}
+                <div
+                  onDragOver={e => { e.preventDefault(); setDragging(true); }}
+                  onDragLeave={() => setDragging(false)}
+                  onDrop={e => { e.preventDefault(); setDragging(false); }}
+                  onClick={() => inputRef.current?.click()}
+                  style={{
+                    backgroundColor: '#FFF8F2',
+                    backgroundImage: 'radial-gradient(circle,rgba(180,140,100,.3) 1.5px,transparent 1.5px)',
+                    backgroundSize: '12px 12px',
+                    border: '2px solid #2C2825',
+                    borderRadius: '4px 2px 6px 3px / 2px 6px 3px 7px',
+                    overflow: 'hidden',
+                    boxShadow: '1px 3px 8px rgba(0,0,0,.1)',
+                    transform: `rotate(${CARD_ROT[0]}deg)`,
+                    cursor: 'pointer',
+                    transition: 'transform .28s ease, box-shadow .28s ease',
+                  }}
+                >
+                  <div style={{ padding: '10px 10px 0' }}>
+                    <div className="flex flex-col items-center justify-center gap-2"
+                      style={{ aspectRatio: '4/3', border: `1.5px dashed ${dragging ? '#C84B3A' : '#C4A882'}`, background: dragging ? 'rgba(200,75,58,.06)' : 'transparent', transition: 'all .2s' }}
+                    >
+                      <span style={{ fontSize: 30, color: dragging ? '#C84B3A' : '#C4A882' }}>+</span>
+                      <p style={{ fontSize: 11, color: '#9C7060' }}>drop or browse</p>
                     </div>
                   </div>
-
-                  {rest.map((work, idx) => (
-                    <ArtCard key={work.id} src={work.src} title={work.title} year={work.year} medium={work.medium} rotation={CARD_ROT[(idx + 1) % CARD_ROT.length]} href="/critique" vi={idx} />
-                  ))}
+                  <div style={{ padding: '12px 14px 16px' }}>
+                    <span style={{ fontSize: 9, color: '#C4A882', letterSpacing: '.06em', textTransform: 'uppercase', fontWeight: 700 }}>Upload</span>
+                    <p style={{ fontFamily: 'Mansalva', fontSize: 17, color: '#C4A882', marginTop: 6, marginBottom: 7 }}>new work</p>
+                    <p style={{ fontSize: 11, color: '#C4A882', lineHeight: 1.6 }}>Add a piece to your library for critique and reflection.</p>
+                  </div>
                 </div>
+
+                {filtered.map((work, idx) => (
+                  <ArtCard key={work.id} src={work.src} title={work.title} year={work.year} medium={work.medium} description={work.description} rotation={CARD_ROT[(idx + 1) % CARD_ROT.length]} href="/critique" vi={idx} />
+                ))}
               </div>
             )}
 
