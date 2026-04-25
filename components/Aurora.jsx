@@ -100,8 +100,8 @@ export default function Aurora(props) {
 
   useEffect(() => {
     const ctn = ctnDom.current;
-    const bc = bubbleRef.current;
-    if (!ctn || !bc) return;
+    console.log(ctnDom);
+    if (!ctn) return;
 
     const renderer = new Renderer({
       alpha: true,
@@ -111,12 +111,7 @@ export default function Aurora(props) {
     const gl = renderer.gl;
     gl.clearColor(0, 0, 0, 0);
     gl.disable(gl.BLEND);
-    Object.assign(gl.canvas.style, {
-      position: 'absolute',
-      top: '0', left: '0',
-      width: '100%', height: '100%',
-      backgroundColor: 'transparent',
-    });
+    gl.canvas.style.backgroundColor = 'transparent';
 
     let program;
 
@@ -125,8 +120,6 @@ export default function Aurora(props) {
       const width = ctn.offsetWidth;
       const height = ctn.offsetHeight;
       renderer.setSize(width, height);
-      bc.width = width;
-      bc.height = height;
       if (program) {
         program.uniforms.uResolution.value = [width, height];
       }
@@ -140,10 +133,10 @@ export default function Aurora(props) {
 
     const parseColor = hex => { const c = new Color(hex); return [c.r, c.g, c.b]; }
 
-    // Set canvas dimensions before initialising bubbles and program.
-    resize();
-
+    const bc = bubbleRef.current;
     const bctx = bc.getContext('2d');
+    bc.width = ctn.offsetWidth;
+    bc.height = ctn.offsetHeight;
 
     const bubbles = Array.from({ length: 60 }, () => ({
       x: Math.random() * bc.width,
@@ -158,11 +151,13 @@ export default function Aurora(props) {
     function drawBubbles() {
       bctx.clearRect(0, 0, bc.width, bc.height);
       for (const b of bubbles) {
+        // main bubble
         bctx.beginPath();
         bctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
         bctx.fillStyle = `rgba(255, 255, 255, ${b.opacity * 0.8})`;
         bctx.fill();
 
+        // shine
         bctx.beginPath();
         bctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.35, b.r * 0.28, 0, Math.PI * 2);
         bctx.fillStyle = `rgba(255, 255, 255, 0.5)`;
@@ -189,7 +184,7 @@ export default function Aurora(props) {
         uAmplitude: { value: amplitude },
         uColorTop: { value: parseColor(colorTop) },
         uColorWave: { value: parseColor(colorWave) },
-        uResolution: { value: [bc.width, bc.height] },
+        uResolution: { value: [ctn.offsetWidth, ctn.offsetHeight] },
         uBlend: { value: blend }
       }
     });
@@ -205,6 +200,7 @@ export default function Aurora(props) {
       program.uniforms.uAmplitude.value = propsRef.current.amplitude ?? 1.0;
       program.uniforms.uBlend.value = propsRef.current.blend ?? blend;
       program.uniforms.uColorTop.value = parseColor(propsRef.current.colorTop ?? colorTop);
+      program.uniforms.uColorWave.value = parseColor(propsRef.current.colorWave ?? colorWave);
       program.uniforms.uColorWave.value = parseColor(propsRef.current.colorWave ?? colorWave);
       renderer.render({ scene: mesh });
     };

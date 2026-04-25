@@ -1,6 +1,5 @@
 'use client'
 
-import { usePathname } from 'next/navigation';
 import './page.css';
 import Aurora from '../components/Aurora.jsx';
 import Button from '../components/Button';
@@ -33,13 +32,11 @@ export default function Home() {
       </div>
       <div className="container">
         <Aurora
-          key={pathname}
           colorTop="#304c89"
           colorWave="#648de5"
           speed={1.8}
           amplitude={0.9}
           blend={0}
-          key={router.asPath}
         />
         <div className="glass-container">
 

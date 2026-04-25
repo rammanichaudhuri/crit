@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 const SECTIONS = [
   {
@@ -28,7 +29,7 @@ const SECTIONS = [
 
 const MOCK_AI = `The composition leans on symmetry — stable, but risks feeling inert. Warm tones in the lower third anchor the piece well, though the shift to cooler values mid-frame is abrupt; a softer gradient would unify the palette. The focal point reads clearly. Introducing a secondary element off-axis would add visual tension without breaking the harmony.`;
 
-export default function CritiquePage() {
+const CritiquePage = () => {
   const [notes, setNotes] = useState({ works: '', doesnt: '', improve: '' });
   const [showAI, setShowAI] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
@@ -42,10 +43,9 @@ export default function CritiquePage() {
   }
 
   return (
-    <div style={{ height: '100vh', background: '#EDE9E6', color: '#2C2825', overflow: 'hidden' }}>
+    <div style={{ height: '100vh', background: '#EDE9E6', color: '#2C2825', overflow: 'hidden', minWidth: '100vw' }}>
       <main className="flex h-full pt-[84px]">
 
-        {/* ── Left: image ── */}
         <div
           className="relative flex-shrink-0 flex items-center justify-center overflow-hidden"
           style={{ width: '44%', background: '#D4CEC9' }}
@@ -86,7 +86,6 @@ export default function CritiquePage() {
             </span>
           </div>
 
-          {/* three sections — all visible, scrollable */}
           <div className="flex-1 overflow-y-auto">
             {SECTIONS.map((s, i) => (
               <div
@@ -150,3 +149,5 @@ export default function CritiquePage() {
     </div>
   );
 }
+
+export default CritiquePage;

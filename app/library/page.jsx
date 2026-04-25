@@ -23,7 +23,7 @@ export default function LibraryPage() {
   const [featured, ...rest] = filtered;
 
   return (
-    <div style={{ minHeight: '100vh', background: '#EDE9E6', color: '#2C2825' }}>
+    <div style={{ minHeight: '100vh', overflowY: 'auto', background: '#EDE9E6', color: '#2C2825', minWidth: '100vw' }}>
       <main className="pt-[100px] pb-20 px-10 max-w-7xl mx-auto">
 
         {/* ── Header row ── */}
